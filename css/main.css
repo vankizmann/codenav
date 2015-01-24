@@ -1,0 +1,21 @@
+div.wrapper {
+  width: 600px;
+  margin: 20px auto;
+}
+.codenav {
+  width: 100%;
+}
+.codenav .cn-input label {
+  width: 100%;
+  display: block;
+}
+.codenav .cn-console {
+  color: white;
+  font-family: monospace;
+  background-color: black;
+  width: 100%;
+  max-height: 300px;
+  padding: 40px 30px;
+  margin-top: 20px;
+  overflow: hidden;
+}

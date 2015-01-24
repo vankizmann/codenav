@@ -11,7 +11,7 @@ grunt.initConfig({
             files: {
                 "css/font-awesome.css": "bower_components/font-awesome/less/font-awesome.less",
                 "css/kube.css": "bower_components/kube-framework/less/kube.less",
-                "css/codenav.css": "less/codenav.less"
+                "css/main.css": "less/main.less"
             }
         }
     },
