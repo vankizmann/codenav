@@ -1,0 +1,23 @@
+{
+  "name": "codenav",
+  "version": "0.0.1",
+  "authors": [
+    "Eduard Kizmann <info@vanki.de>"
+  ],
+  "license": "MIT",
+  "homepage": "http://vanki.de/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "latest",
+    "underscore": "latest",
+    "font-awesome": "latest",
+    "fuse": "latest",
+    "kube-framework": "latest"
+  }
+}
