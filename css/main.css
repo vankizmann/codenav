@@ -1,21 +1,50 @@
 div.wrapper {
-  width: 600px;
+  width: 80%;
   margin: 20px auto;
 }
 .codenav {
   width: 100%;
 }
+.codenav div {
+  position: relative;
+}
+.codenav .cn-hidden {
+  display: none;
+  opacity: 0;
+}
 .codenav .cn-input label {
   width: 100%;
-  display: block;
+  display: none;
+}
+.codenav .cn-input input {
+  width: 100%;
+  border-bottom: 0;
+}
+.codenav .cn-input input:focus {
+  outline: none;
+  box-shadow: none;
 }
 .codenav .cn-console {
   color: white;
   font-family: monospace;
   background-color: black;
   width: 100%;
-  max-height: 300px;
-  padding: 40px 30px;
-  margin-top: 20px;
+  height: 205px;
+  line-height: 20px;
   overflow: hidden;
+}
+.codenav .cn-console div {
+  padding: 10px 30px;
+}
+.codenav .cn-console div:first-child {
+  background-color: #111;
+}
+.codenav .cn-message {
+  color: white;
+  background-color: #2575ed;
+  width: 100%;
+  line-height: 20px;
+}
+.codenav .cn-message div {
+  padding: 20px 30px;
 }

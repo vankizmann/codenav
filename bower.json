@@ -16,8 +16,7 @@
   "dependencies": {
     "jquery": "latest",
     "underscore": "latest",
-    "font-awesome": "latest",
     "fuse": "latest",
-    "kube-framework": "latest"
+    "animate.css": "latest"
   }
 }
