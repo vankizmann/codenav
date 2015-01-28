@@ -1,8 +1,28 @@
-@wrapper: 80%;
+@wrapper: 60%;
+
+::selection {
+    background-color: grey;
+}
+
+body {
+    color: white;
+    background-color: black;
+    font-family: 'Roboto', sans-serif;
+}
+
+input {
+    font-family: 'Roboto', sans-serif;
+}
+
+input, div {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
 
 div.wrapper {
     width: @wrapper;
-    margin: 20px auto;
+    margin: 200px auto;
 }
 
 @import "codenav";

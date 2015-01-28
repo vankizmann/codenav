@@ -1,152 +1,242 @@
 (function($) {
-    $.fn.codenav = function(config, lang) {
+    $.fn.codenav = function(config) {
 
         // Rewrite this
         var self = this;
 
         // Set defaults
         var defaults = {
-            "lang": "en",
-            "name": "codenav",
             "version": "0.0.1",
             "list": [
                 {
                     "id": "google",
+                    "list": [],
                     fn: function(value) {
-                        window.location = 'https://www.google.de/search?q=' + encodeURI(value);
+                        if(value) {
+                            window.location = 'https://www.google.com/search?q=' + encodeURI(value);
+                        } else {
+                            window.location = 'https://www.google.com/'
+                        }
                         return;
                     }
                 },
                 {
-                    "id": "bing",
+                    "id": "github",
+                    "list": [
+                        { "id": "laravel" },
+                        { "id": "october" }
+                    ],
                     fn: function(value) {
-                        window.location = 'https://www.bing.com/search?q=' + encodeURI(value);
+                        if(value) {
+                            window.location = 'https://github.com/search?q=' + encodeURI(value);
+                        } else {
+                            window.location = 'https://github.com/'
+                        }
                         return;
                     }
-                },
+                }
             ]
         };
 
         // Combine defaults and config
         config = jQuery.extend(defaults, config);
 
+        //
+
+
         var fnHelper = {
+            val: {},
+            set: function(key, element) {
+                this.val[key] = element;
+                return;
+            },
+            get: function(key) {
+                var element =  $(self).find(this.val[key]);
+                return element;
+            },
             clear: function(element) {
-               $(self).find(element).html(null);
+                $(self).find(element).html('');
+                return element;
+            },
+            append: function(element, value) {
+               $(self).find(element).append(value);
                return;
             },
-            fadeIn: function(element, config) {
-                var config = jQuery.extend({delay: 0, fade: 400, slide: 400}, config);
-                var element = $(self).find(element);
-                element.delay(config.delay).slideDown(
-                    {queue: true, duration: config.slide}
-                ).animate(
-                    {opacity: 1}, {queue: true, duration: config.fade}
-                );
-                return;
+            prepend: function(element, value) {
+               $(self).find(element).prepend(value);
+               return;
             },
-            fadeOut: function(element, config) {
-                var config = jQuery.extend({delay: 0, fade: 400, slide: 400}, config);
-                var element = $(self).find(element);
-                element.delay(config.delay).animate(
-                    {opacity: 0}, {queue: true, duration: config.fade}
-                ).slideUp(
-                    {queue: true, duration: config.slide}
-                );
-                return;
+            // visible: function(element) {
+            //     var element =  $(self).find(element);
+            //     if(element.css('display') == 'none') {
+            //         return false;
+            //     } else {
+            //         return true;
+            //     }
+            // },
+            // fadeIn: function(element, config) {
+            //     var config = jQuery.extend({ delay: 0, fade: 400, slide: 400 }, config);
+            //     var element = $(self).find(element);
+
+            //     element.delay(config.delay).slideDown(
+            //         { queue: false, duration: config.slide }
+            //     ).animate(
+            //         { opacity: 1 }, { queue: false, duration: config.fade }
+            //     );
+            //     return;
+            // },
+            // fadeOut: function(element, config) {
+            //     var config = jQuery.extend({ delay: 0, fade: 400, slide: 400 }, config);
+            //     var element = $(self).find(element);
+
+            //     element.delay(config.delay).slideDown(
+            //          { queue: true, duration: config.slide }
+            //     ).animate(
+            //         { opacity: 0 }, { queue: true, duration: config.fade }
+            //     );
+            //     return;
+            // }
+        };
+
+
+        $(self).append('<div class="cn-input"><input type="text" autofocus></div>');
+        $(self).append('<div class="cn-list"><ul></ul></div>');
+        $(self).append('<div class="cn-message"><div class="cn-hidden"></div></div>');
+
+        fnHelper.set('elementInput', 'div.cn-input input');
+        fnHelper.set('elementList', 'div.cn-list ul');
+
+        fnHelper.set('recentInput', '');
+        fnHelper.set('recentResult', null);
+        fnHelper.set('recentSelected', 0);
+
+
+        var createList = function(input, list, config) {
+
+            var fuse = new Fuse(list, config);
+            var result = fuse.search(input);
+
+            fnHelper.set('recentSelected', -1);
+            fnHelper.set('recentLength', result.length);
+
+            fnHelper.get('elementList').html('');
+
+            _.each(result, function(obj, i) {
+                fnHelper.append(fnHelper.val.elementList, '<li>' + obj.id + '</li>');
+            });
+
+            fnHelper.get('elementList').children().on('click', function() {
+                var regexp = fnHelper.get('elementInput').val().match(/^([a-z]+)\s+(.+)$/);
+
+                if(regexp) {
+                    fnHelper.get('elementInput').val(regexp[1] + ' ' + $(this).html());
+                } else {
+                    fnHelper.get('elementInput').val($(this).html() + ' ');
+                }
+                fnHelper.get('elementList').html('');
+            });
+
+            return result;
+        };
+
+
+        fnHelper.get('elementInput').on('keyup', function(e) {
+
+            if (!_.isEqual(e.which, 9) && !_.isEqual(e.which, 13) && !_.isEqual(e.which, 38) && !_.isEqual(e.which, 40) && !_.isEqual(e.which, 91) && !_.isEqual($(this).val(), fnHelper.val.recentInput)) {
+
+                fnHelper.set('recentInput', $(this).val());
+
+                var regexp = $(this).val().match(/^([a-z]+)\s+(.+)$/);
+
+                if(regexp) {
+                    createList(regexp[2], _.find(config.list, { id: regexp[1] }).list, { shouldSort: true, threshold: 0.3, distance: 1000, keys: ['id'] });
+                } else {
+                    createList($(this).val(), config.list, { shouldSort: true, threshold: 0.3, distance: 1000, keys: ['id'] });
+                }
+
             }
 
-
-        }
-
-        // Helper to show a message
-        var helperMessage = function(message) {
-            // Insert message
-            $(self).find('div.cn-message').html('<div class="cn-hidden">' + _.escape(message) + '</div>');
-            // Animate slidedown and fadein
-            $(self).find('div.cn-message').find('div').slideDown(
-                { queue: true, duration: config.animation.message.slidedown}
-            ).animate(
-                { opacity: 1 },
-                { queue: true, duration: config.animation.message.fadein }
-            );
-            // Animate slideup and fadeout with delay
-            $(self).find('div.cn-message').find('div').delay(config.animation.message.delay).animate(
-                { opacity: 0 },
-                { queue: true, duration: config.animation.message.fadeout }
-            ).slideUp(
-                { queue: true, duration: config.animation.message.slideup}
-            );
-            return;
-        };
-
-        // Helper to put a message into console
-        var helperConsole = function(message) {
-            // Insert message
-            $(self).find('div.cn-console').prepend('<div class="cn-hidden">' + message + '</div>');
-            // Animate slidedown and fadein
-            $(self).find('div.cn-console').find('div').slideDown(
-                { queue: true, duration: config.animation.console.slidedown}
-            ).animate(
-                { opacity: 1 },
-                { queue: true, duration: config.animation.console.fadein }
-            );
-            return;
-        };
-
-        // Create Input
-        $(self).append('<div class="cn-input"><input type="text" id="codenav" autofocus></div>');
-
-        // Create Command
-        $(self).append('<div class="cn-items"><ul></ul></div>');
-
-        // Create message
-        $(self).append('<div class="cn-message"><div class="cn-hidden">aasds</div></div>');
-
-        // Create console
-        $(self).append('<div class="cn-console"></div>');
-
-        fnHelper.fadeOut('.cn-console');
-        fnHelper.fadeIn('.cn-message div');
-        fnHelper.fadeOut('.cn-message div', {delay: 3000});
-
-        // Bind change
-        $(self).find('#codenav').on('change', function() {
-            $('div.cn-items ul').html('');
-            $(this).val($(this).val() + ' ');
-            console.log($(this).val());
         });
 
-        $(self).find('#codenav').on('keydown', function(e) {
-            var keyCode = e.keyCode || e.which;
-
-            if (keyCode == 9) {
+       fnHelper.get('elementInput').on('keydown', function(e) {
+            // Event tab
+            if (_.isEqual(e.which, 9)) {
+                // Prevent default action
                 e.preventDefault();
 
-                $('div.cn-input input').val($('div.cn-items ul li').eq(0).html()).change();
+                var regexp = $(this).val().match(/^([a-z]+)\s+(.+)$/);
+                // Clear list and set command
+                var selected = fnHelper.val.recentSelected;
+                if(selected < 0) selected = 0;
+                if(fnHelper.get('elementList').children().eq(selected).length) {
+
+                    if(regexp) {
+                        fnHelper.get('elementInput').val(regexp[1] + ' ' + fnHelper.get('elementList').children().eq(selected).html());
+                    } else {
+                        fnHelper.get('elementInput').val(fnHelper.get('elementList').children().eq(selected).html() + ' ');
+                    }
+                    fnHelper.get('elementList').html('');
+                }
+
+            }
+            // Event enter
+            if (_.isEqual(e.which, 13)) {
+                // Prevent default action
+                e.preventDefault();
+                fnHelper.get('elementList').html('');
+
+                var regexp = $(this).val().match(/^([a-z]+)\s*(.+)?$/);
+                var listItem = _.find(config.list, { id: regexp[1] });
+
+                if(regexp && listItem) {
+                    if(!regexp[2]) regexp[2] = '';
+                    listItem.fn(regexp[2]);
+                } else {
+                    console.log('error')
+                }
+            }
+            // Event up
+            if (_.isEqual(e.which, 38)) {
+                // Prevent default action
+                e.preventDefault();
+
+                var regexp = $(this).val().match(/^([a-z]+)\s+(.+)$/);
+                // Select upper element
+                if(fnHelper.val.recentSelected) {
+                    fnHelper.get('elementList').children().eq(fnHelper.val.recentSelected).removeClass('selected');
+                    fnHelper.set('recentSelected', fnHelper.val.recentSelected - 1);
+                    fnHelper.get('elementList').children().eq(fnHelper.val.recentSelected).addClass('selected');
+
+                    if(regexp) {
+                        fnHelper.get('elementInput').val(regexp[1] + ' ' + fnHelper.get('elementList').children().eq(fnHelper.val.recentSelected).html());
+                    } else {
+                        fnHelper.get('elementInput').val(fnHelper.get('elementList').children().eq(fnHelper.val.recentSelected).html() + ' ');
+                    }
+
+                }
+            }
+            // Event down
+            if (_.isEqual(e.which, 40)) {
+                // Prevent default action
+                e.preventDefault();
+
+                var regexp = $(this).val().match(/^([a-z]+)\s(.+)$/);
+                // Select lower element
+                if((fnHelper.val.recentLength - 1) > fnHelper.val.recentSelected) {
+                    fnHelper.get('elementList').children().eq(fnHelper.val.recentSelected).removeClass('selected');
+                    fnHelper.set('recentSelected', fnHelper.val.recentSelected + 1);
+                    fnHelper.get('elementList').children().eq(fnHelper.val.recentSelected).addClass('selected');
+
+                    if(regexp) {
+                        fnHelper.get('elementInput').val(regexp[1] + ' ' + fnHelper.get('elementList').children().eq(fnHelper.val.recentSelected).html());
+                    } else {
+                        fnHelper.get('elementInput').val(fnHelper.get('elementList').children().eq(fnHelper.val.recentSelected).html() + ' ');
+                    }
+
+                }
             }
         });
 
-        var keyuprecent = '';
-
-        $(self).find('#codenav').on('keyup', function() {
-            // define keyupinput
-            var keyupinput = $(this).val();
-            // Fire just once per keypress
-            if(keyuprecent == keyupinput) return;  keyuprecent = keyupinput;
-            // Clean list
-            $('div.cn-items ul').html('');
-            // Create fuse object
-            var fuse = new Fuse(config.cmd, { threshold: 0.4, keys: ["id"] });
-
-            _.each(fuse.search(keyupinput), function(obj, i) {
-                 $('div.cn-items ul').append('<li>' + obj.id + '</li>');
-            });
-
-            $('div.cn-items ul li').on('click', function() {
-                $('div.cn-input input').val($(this).html()).change();
-            });
-
-        });
     };
+
 }(jQuery));
