@@ -19,17 +19,17 @@ div.wrapper {
   width: 60%;
   margin: 200px auto;
 }
-.codenav {
+.waechter {
   width: 100%;
 }
-.codenav div {
+.waechter div {
   position: relative;
 }
-.codenav .cn-input {
+.waechter .wae-input {
   width: 60%;
   margin: 300px auto 0 auto;
 }
-.codenav .cn-input input {
+.waechter .wae-input input {
   color: white;
   font-size: 21px;
   font-weight: 300;
@@ -39,17 +39,17 @@ div.wrapper {
   line-height: 55px;
   padding: 0 15px;
 }
-.codenav .cn-input input:focus {
+.waechter .wae-input input:focus {
   outline: none;
   box-shadow: none;
 }
-.codenav .cn-list {
+.waechter .wae-items {
   color: white;
   background-color: #143491;
   width: 60%;
   margin: auto;
 }
-.codenav .cn-list ul {
+.waechter .wae-items ul {
   font-size: 21px;
   font-weight: 300;
   margin: 0;
@@ -57,13 +57,13 @@ div.wrapper {
   list-style-type: none;
   line-height: 20px;
 }
-.codenav .cn-list ul li {
+.waechter .wae-items ul li {
   cursor: default;
   padding: 12.5px 15px 15px 15px;
 }
-.codenav .cn-list ul li:hover {
+.waechter .wae-items ul li:hover {
   background-color: #10286f;
 }
-.codenav .cn-list ul li.selected {
+.waechter .wae-items ul li.selected {
   background-color: #10286f;
 }
